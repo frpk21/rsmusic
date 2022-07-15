@@ -1,0 +1,225 @@
+{% extends 'base/base.html' %}
+{% block contenido%}
+
+{% if form.errors %}
+    {% for field in form %}
+        {% if field.errors %}
+            <div class="alert alert-danger fade in">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {% for error in field.errors %}
+                    <strong>{{ error|escape }}</strong>
+                {% endfor %}
+            </div>
+        {% endif %} 
+    {% endfor %}
+    {% if form.non_field_errors%}
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            {% for error in form.non_field_errors %}
+                <strong>{{ error|escape }}</strong>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endif %}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card ">
+                <div class="card-header card-header-rose card-header-text">
+                    <div class="card-text">
+                        <h4 class="card-title">{% if object %} Editar {% else %} Nuevo {% endif %}</h4>
+                        <span style="padding: 15px; font-size: 12px; color:rgb(212, 212, 212);">SEDE: {{sede.nombre_sede}}</span>
+                    </div>
+                </div>
+                <div style="display: none">
+                    
+                </div>
+                <div class="card-body ">
+                    <form id="id_form_rsmusic" enctype="multipart/form-data" name="form1" method="POST" onkeydown="return event.key != 'Enter';" action="{% url 'radio:rsmusic_new' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">T&iacute;tulo</label>
+                            <div class="col-sm-10">
+                                <div class="form-group has-success">
+                                    {{form.nombre}}
+                                    <span class="form-control-feedback">
+                                        {% if form.nombre.errors %}
+                                            {% for error in form.nombre.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i class="material-icons">done</i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">Int&eacute;rprete</label>
+                            <div class="col-sm-10">
+                                <div class="form-group has-danger">
+                                    {{form.interprete}}
+                                    <span class="form-control-feedback">
+                                        {% if form.interprete.errors %}
+                                            {% for error in form.interprete.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i class="material-icons">done</i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">Autor</label>
+                            <div class="col-sm-10">
+                                <div class="form-group has-danger">
+                                    {{form.autor}}
+                                    <span class="form-control-feedback">
+                                        {% if form.autor.errors %}
+                                            {% for error in form.autor.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i class="material-icons">done</i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">A&nacute;o</label>
+                            <div class="col-sm-3">
+                                <div class="form-group has-danger">
+                                    {{form.ano}}
+                                    <span class="form-control-feedback">
+                                        {% if form.ano.errors %}
+                                            {% for error in form.ano.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i class="material-icons">done</i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-form-label">Estrellas</label>
+                            <div class="col-sm-3">
+                                <div class="form-group has-danger">
+                                    {{form.likes}}
+                                    <span class="form-control-feedback">
+                                        {% if form.likes.errors %}
+                                            {% for error in form.likes.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i class="material-icons">done</i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">G&eacute;nero</label>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    {{form.genero}}
+                                    <!--<select class="js-data-example-ajax" style="width: 100%;" name='genero' id='genero' value="form.genero">
+                                    </select>-->
+                                    <span class="form-control-feedback">
+                                        {% if form.ano.errors %}
+                                            {% for error in form.ano.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <i class="material-icons">done</i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-form-label">Archivo de audio</label>
+                            <div class="col-sm-5">
+                                <div class="form-control">
+                                    {{form.arc_audio}}
+                                </div>
+                            </div>
+                        </div><br>
+                        <div class="panel-footer">
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-social-icon btn-success" name="submit" onclick="return ConfirmaGrabar()"><i class="fa fa-save"></i> Guardar</button>
+                                <a class="btn btn-social-icon btn-default" href="{% url 'radio:rsmusic_list' %}"><i class="fa fa-times"></i> Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#genero").select2({
+            tags: true, 
+            multiple: false,
+            tokenSeparators: [',', ' '], 
+            minimumInputLength: 3,
+            delay: 200,
+            minimumResultsForSearch: 20, 
+            ajax: { 
+                url: '{% url 'radio:genero_select2' %}', 
+                dataType: "json", 
+                type: "GET", 
+                data: function (params) { var queryParameters = { q: params.term } 
+                    return queryParameters; 
+                }, 
+                processResults: function (data) {
+                    return { 
+                        results: $.map(data, function (item) { 
+                            return { 
+                                text: item.nombre, 
+                                id: item.id 
+                            } 
+                        }) 
+                    }; 
+                } 
+            } 
+        });
+    })
+
+
+    function ConfirmaGrabar(){
+        //var audio_file = $("#archivo").val();
+        //$("#id_arc_audio").val(audio_file);
+        swal({
+            title: 'Confirme.',
+            showCancelButton: false,
+            showCancelButton: true,
+            confirmButtonText: 'Grabar Audio ?',
+            cancelButtonText: 'Cancelar',
+            confirmButtonClass: "btn btn-success",
+            cancelButtonClass: "btn btn-danger",
+            buttonsStyling: false
+        }).then(function(dismiss) {
+            if (dismiss.dismiss === 'cancel') {
+                swal({
+                    title: 'Cancelado',
+                    text: 'Audio no fue grabado.',
+                    type: 'error',
+                    confirmButtonClass: "btn btn-info",
+                    buttonsStyling: false
+                }).catch(swal.noop)
+            }
+            else {
+                $('#id_form_rsmusic').submit();
+            }
+        }).catch(swal.noop)
+    }
+</script>
+
+{% endblock contenido %}
+

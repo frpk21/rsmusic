@@ -1,0 +1,154 @@
+{% extends 'base/base.html' %}
+
+{% block contenido %}
+
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-warning card-header-icon">
+              <div class="card-icon">
+                  <i class="material-icons">assignment</i>
+              </div>
+              <h3 class="card-title">Biblioteca de M&uacute;sica<span style="color: gray; font-size: 12px; padding:10px;"> {{sede.nombre_sede}}</span></h3>
+              <a href="{% url 'radio:rsmusic_new' %}" class="btn btn-info"><span class="fa fa-plus-circle"></span>   Nuevo</a>
+          </div>
+          <div class="card-body">
+            <div class="material-datatables">
+              <table id="radicaciones_table" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; font-size:12px;">
+                <thead>
+                  <tr>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>TITULO</strong></th>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>INTERPRETE</strong></th>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>AUTOR</strong></th>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>GENERO</strong></th>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>TIEMPO</strong></th>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>LIKES</strong></th>
+                    <th style="font-size:12px; background: gray; color: white;"><strong>A&Nacute;O</strong></th>
+                    <th style="font-size:12px; background: gray; color: yellow;" data-orderable="false" class="text-center"><strong>Acciones</strong></th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th><strong>T&iacute;tulo</strong></th>
+                    <th><strong>Interprete</strong></th>
+                    <th><strong>Autor</strong></th>
+                    <th><strong>G&eacute;nero</strong></th>
+                    <th><strong>Tiempo</strong></th>
+                    <th><strong>Likes</strong></th>
+                    <th><strong>A&nacute;o</strong></th>
+                    <th data-orderable="false" class="text-center"><strong>Acciones</strong></th>
+                  </tr>
+                </tfoot>
+                <tbody>
+                  {% for item in rsmusic %}
+                    <div style="display: none">
+                      {{ forloop.counter1 }}
+                    </div>
+                    <tr>
+                        <td>{{item.nombre}}</td>
+                        <td>{{item.interprete}}</td>
+                        <td>{{item.autor}}</td>
+                        <td>{{item.genero.nombre}}</td>
+                        <td>{{item.tiempo}}</td>
+                        <td>{{item.likes}}</td>
+                        <td>{{item.ano}}</td>
+                        <td class="td-actions text-center">
+                          <a href="{% url 'ordenacion:update_provicional' item.id item.producto %}">
+                            {% if item.orden_provicional %}
+                              <button type="button" rel="tooltip" class="btn btn-success btn-round">
+                                <i class="material-icons">done</i>
+                              </button>
+                            {% else %}
+                              <button type="button" rel="tooltip" class="btn btn-gray btn-round">
+                                <i class="material-icons">close</i>
+                              </button>
+                            {% endif %}
+                          </a>
+                        </td>
+                        <td class="td-actions text-center">
+                          <a href="{% url 'ordenacion:listarordenes' item.id item.nit_cliente__rzn_social %}">
+
+                            <button type="button" rel="tooltip" class="btn btn-info btn-round">
+                              <i class="material-icons">add</i>
+                            </button>
+                          </a>
+
+                          <a href="{% url 'radio:rad_edit' item.id %}">
+                            <button type="button" rel="tooltip" class="btn btn-success btn-round">
+                                <i class="material-icons">edit</i>
+                            </button>
+                          </a>
+                          <a href="#">
+                            <button type="button" rel="tooltip" class="btn btn-danger btn-round">
+                                <i class="material-icons">delete</i>
+                            </button>
+                          </a>
+                        </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('#radicaciones_table').DataTable({
+      "pagingType": "full_numbers",
+      "lengthMenu": [
+        [10, 25, 50, -1],
+        [10, 25, 50, "Todo"]
+      ],
+      responsive: true,
+      "language": {
+        "sProcessing":    "Procesando...",
+        "sLengthMenu":    "Mostrar _MENU_ registros",
+        "sZeroRecords":   "No se encontraron resultados",
+        "sEmptyTable":    "Ningún dato disponible en esta tabla",
+        "sInfo":          "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty":     "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFiltered":  "(filtrado de un total de _MAX_ registros)",
+        "sInfoPostFix":   "",
+        "sSearch":        "Buscar:",
+        "sUrl":           "",
+        "sInfoThousands":  ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+            "sFirst":    "Primero",
+            "sLast":    "Último",
+            "sNext":    "Siguiente",
+            "sPrevious": "Anterior"
+        }}
+    });
+
+    var table = $('#radicaciones_table').DataTable();
+
+    // Edit record
+    table.on('click', '.edit', function() {
+      $tr = $(this).closest('tr');
+      var data = table.row($tr).data();
+      alert('You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.');
+    });
+
+    // Delete a record
+    table.on('click', '.remove', function(e) {
+      $tr = $(this).closest('tr');
+      table.row($tr).remove().draw();
+      e.preventDefault();
+    });
+
+    //Like record
+    table.on('click', '.like', function() {
+      alert('You clicked on Like button');
+    });
+  });
+</script>
+
+{% endblock contenido %}

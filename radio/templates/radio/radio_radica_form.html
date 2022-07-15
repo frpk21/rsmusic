@@ -1,0 +1,506 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+{% block contenido%}
+{% load humanize %}
+
+{% if form.errors %}
+    {% for field in form %}
+        {% if field.errors %}
+            <div class="alert alert-danger fade in">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                {% for error in field.errors %}
+                    <strong>{{ error|escape }}</strong>
+                {% endfor %}
+            </div>
+        {% endif %} 
+    {% endfor %}
+    {% if form.non_field_errors%}
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            {% for error in form.non_field_errors %}
+                <strong>{{ error|escape }}</strong>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endif %}
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Understood</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="content">
+    <div class="container-fluid">
+        <form id="id_form_invoice" name="form1" method="POST" onkeydown="return event.key != 'Enter';" action="{% url 'radio:radicaciones' %}">
+            {% csrf_token %}
+            <div class="card-header card-header-rose card-header-icon">
+                <div class="panel-heading">
+                    <h4 class="card-title" style="color:rgb(10, 10, 10); padding: 0px 40px;">
+                        <strong>{% if object %} Editar {% else %} Nueva {% endif %} Orden de Publicidad {{ form.id }}</strong> {% if form.orden_provicional == false %}   - PROVICIONAL -{% endif %}
+                        <span style="padding: 15px; font-size: 12px; color:gray;">SEDE: {{sede.nombre_sede}}</span>
+                    </h4>
+                </div>
+            </div>
+            <div class="card-body ">
+                <div style="display: none">
+                    {{ form.valor_bruto }}
+                    {{ form.porc_descuento }}
+                    {{ form.valor_neto }}
+                </div>
+                <div class="row ">
+                    <div class="table-responsive-sm" style="padding: 0px 55px;">
+                        <table class="table-sm table-bordered" style="vertical-align: center; text-align: center; text-align: center;">
+                            <thead style="background: rgb(170, 215, 202); font-size:11px; color:rgb(80, 80, 80)">
+                            <tr >
+                                <th>ORDEN DE PUBLICIDAD</th>
+                                <th style="width: 450px;">ASESOR COMERCIAL</th>
+                                <th>INICIO CONTRATO</th>
+                                <th>FIN CONTRATO</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {{ form.no_publicidad }}
+                                        <small class="text-danger">{{form.errors.no_publicidad}}</small>
+                                    </td>
+                                    <td>
+                                        <select class="js-data-example-ajax" style="width: 100%;" name='asesor_comercial' id='vendedor' value="form.asesor_comercial">
+                                        </select>
+                                        <small class="text-danger">{{form.errors.asesor_comercial}}</small>
+                                        {% if form.asesor_comercial.errors %}
+                                            {% for error in form.asesor_comercial.errors %}1
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="form-control-feedback">
+                                                <i class="material-icons">done</i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.fecha_inicio }}
+                                        <small class="text-danger">{{form.errors.fecha_inicio}}</small>
+                                        {% if form.fecha_inicio.errors %}
+                                            {% for error in form.fecha_inicio.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.fecha_final }}
+                                        <small class="text-danger">{{form.errors.fecha_final}}</small>
+                                        {% if form.fecha_final.errors %}
+                                            {% for error in form.fecha_final.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="form-control-feedback">
+                                                <i class="material-icons">done</i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive-sm" style="padding: 5px 55px;">
+                        <table class="table-sm table-bordered" style="vertical-align: center; text-align: center; text-align: center;">
+                            <thead style="background: rgb(170, 215, 202); font-size:11px; color:rgb(0, 0, 0, 0.822)">
+                            <tr >
+                                <th style="width: 479px;">CLIENTE</th>
+                                <th>PRESUPUESTO</th>
+                                <th>ORDEN PROVICIONAL</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <select class="js-data-example-ajax" style="width: 100%;" name='nit_cliente' id='cliente'>
+                                        </select>
+                                        <small class="text-danger">{{form.errors.nit_cliente}}</small>
+                                        {% if form.nit_cliente.errors %}
+                                            {% for error in form.nit_cliente.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="form-control-feedback">
+                                                <i class="material-icons">done</i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ form.presupuesto_cliente }}
+                                        <small class="text-danger">{{form.errors.presupuesto_cliente}}</small>
+                                        {% if form.presupuesto_cliente.errors %}
+                                            {% for error in form.presupuesto_cliente.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{form.orden_provicional}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive-sm" style="padding: 5px 55px;">
+                        <table class="table-sm table-bordered" style="vertical-align: center; text-align: center; text-align: center;">
+                            <thead style="background: rgb(170, 215, 202); font-size:11px; color:rgb(0, 0, 0, 0.822)">
+                            <tr >
+                                <th style="width: 479px;"><strong>CENTRAL DE MEDIOS</strong></th>
+                                <th style="width: 479px;"><strong>CUENTA</strong></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <select class="js-data-example-ajax" style="width: 100%;" name='idagencia' id='central'>
+                                        </select>
+                                        <small class="text-danger">{{form.errors.idagencia}}</small>
+                                        {% if form.idagencia.errors %}
+                                            {% for error in form.idagencia.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="form-control-feedback">
+                                                <i class="material-icons">done</i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <select class="js-data-example-ajax" style="width: 100%;" name='nit_anunciante' id='cuenta'>
+                                        </select>
+                                        <small class="text-danger">{{form.errors.nit_anunciante}}</small>
+                                        {% if form.nit_anunciante.errors %}
+                                            {% for error in form.nit_anunciante.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="form-control-feedback">
+                                                <i class="material-icons">done</i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive-sm" style="padding: 5px 55px;">
+                        <table class="table-sm table-bordered" style="vertical-align: center; text-align: center; text-align: center;">
+                            <thead style="background: rgb(170, 215, 202); font-size:11px; color:rgb(0, 0, 0, 0.822)">
+                            <tr >
+                                <th style="width: 369px;"><strong>PRODUCTO</strong></th>
+                                <th><strong>VALOR TARIFA ($)</strong></th>
+                                <th><strong>DESCUENTO (%)</strong></th>
+                                <th><strong>VALOR NETO ($)</strong></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {{ form.producto }}
+                                        <small class="text-danger">{{form.errors.producto}}</small>
+                                        {% if form.producto.errors %}
+                                            {% for error in form.producto.errors %}
+                                                <small class="text-danger">{{ error|escape }} </small>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <input type="text" name="valor_bruto1" class="form-control" onkeyup="format(this)" style="text-align: right; color:red; font-size:14px; width: 200px;" required="" id="id_valor_bruto1">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="porc_descuento1" value="0" class="form-control" style="text-align: center; color:red;" readonly="" id="id_porc_descuento1">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="valor_neto1" class="form-control" onkeyup="format(this)" style="text-align: right; color:blue; font-size:14px; width: 200px;" onchange="valida_descuento(id)" required="" id="id_valor_neto1">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <div class="text-center">
+                    <button type="submit" class="btn btn-social-icon btn-success" name="submit" onclick="return ConfirmaGrabar()"><i class="fa fa-save"></i> Guardar</button>
+                    <a class="btn btn-social-icon btn-default" href="{% url 'radio:lista_radicaciones' %}"><i class="fa fa-times"></i> Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    window.onload=function (){
+
+        document.getElementById("id_no_publicidad").focus();
+    }
+
+    function sel_vendedor() {
+        swal({
+            title: 'Seleccione un Asesor..',
+            showCancelButton: false,
+            html: '<select class="js-data-example-ajax" style="width: 100%;" name="vendedor" id="vendedor"></select>',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonClass: "btn btn-success",
+            cancelButtonClass: "btn btn-danger",
+            buttonsStyling: false
+        }).then(function(dismiss) {
+            if (dismiss.dismiss === 'cancel') {
+                swal({
+                    title: 'Cancelado',
+                    text: 'Tiquete no emitido..',
+                    type: 'error',
+                    confirmButtonClass: "btn btn-info",
+                    buttonsStyling: false
+                }).catch(swal.noop)
+            }
+            else {
+                
+                $("#id_tcredito").val(parseInt(tcredito));
+                $("#id_transferencia").val(parseInt(transferencia));
+                $("#id_bonos").val(parseInt(bonos));
+                $("#id_credito").val(parseInt(credito));
+                $("#id_descuento").val(parseInt(descuento));
+
+                $('#id_form_invoice').submit();
+            }
+        }).catch(swal.noop)
+    }
+
+    $(document).ready(function () {
+
+        $("#vendedor").select2({
+            tags: true, 
+            multiple: false,
+            tokenSeparators: [',', ' '], 
+            minimumInputLength: 3,
+            delay: 200,
+            minimumResultsForSearch: 20, 
+            ajax: { 
+                url: '{% url 'radio:vendedor_select2' %}', 
+                dataType: "json", 
+                type: "GET", 
+                data: function (params) { var queryParameters = { q: params.term } 
+                    return queryParameters; 
+                }, 
+                processResults: function (data) {
+                    return { 
+                        results: $.map(data, function (item) { 
+                            return { 
+                                text: item.nombre_vendedor, 
+                                id: item.id 
+                            } 
+                        }) 
+                    }; 
+                } 
+            } 
+        });
+
+        $("#cliente").select2({ 
+            tags: true, 
+            multiple: false,
+            tokenSeparators: [',', ' '], 
+            minimumInputLength: 3,
+            delay: 200,
+            minimumResultsForSearch: 20, 
+            ajax: { 
+                url: '{% url 'ordenacion:terceros_select2' %}', 
+                dataType: "json", 
+                type: "GET", 
+                data: function (params) { var queryParameters = { q: params.term } 
+                    return queryParameters; 
+                }, 
+                processResults: function (data) {
+                    return { 
+                        results: $.map(data, function (item) { 
+                            return { 
+                                text: item.rzn_social, 
+                                id: item.id
+                            } 
+                        }) 
+                    }; 
+                } 
+            } 
+        });
+
+        $("#central").select2({ 
+            tags: true, 
+            multiple: false,
+            tokenSeparators: [',', ' '], 
+            minimumInputLength: 3,
+            delay: 200,
+            minimumResultsForSearch: 20, 
+            ajax: { 
+                url: '{% url 'ordenacion:terceros_select2' %}', 
+                dataType: "json", 
+                type: "GET", 
+                data: function (params) { var queryParameters = { q: params.term } 
+                    return queryParameters; 
+                }, 
+                processResults: function (data) {
+                    return { 
+                        results: $.map(data, function (item) { 
+                            return { 
+                                text: item.rzn_social, 
+                                id: item.id
+                            } 
+                        }) 
+                    }; 
+                } 
+            } 
+        });
+
+        $("#cuenta").select2({ 
+            tags: true, 
+            multiple: false,
+            tokenSeparators: [',', ' '], 
+            minimumInputLength: 3,
+            delay: 200,
+            minimumResultsForSearch: 20, 
+            ajax: { 
+                url: '{% url 'ordenacion:terceros_select2' %}', 
+                dataType: "json", 
+                type: "GET", 
+                data: function (params) { var queryParameters = { q: params.term } 
+                    return queryParameters; 
+                }, 
+                processResults: function (data) {
+                    return { 
+                        results: $.map(data, function (item) { 
+                            return { 
+                                text: item.rzn_social, 
+                                id: item.id
+                            } 
+                        }) 
+                    }; 
+                } 
+            } 
+        });
+
+        $("#producto").select2({ 
+            tags: true, 
+            multiple: false,
+            tokenSeparators: [',', ' '], 
+            minimumInputLength: 3,
+            delay: 200,
+            minimumResultsForSearch: 20, 
+            ajax: { 
+                url: '{% url 'ordenacion:productos_select2' %}', 
+                dataType: "json", 
+                type: "GET", 
+                data: function (params) { var queryParameters = { q: params.term } 
+                    return queryParameters; 
+                }, 
+                processResults: function (data) {
+                    return { 
+                        results: $.map(data, function (item) { 
+                            return { 
+                                text: item.nombre, 
+                                id: item.id 
+                            } 
+                        }) 
+                    }; 
+                } 
+            } 
+        });
+
+    });
+    
+    function valida_descuento(id) {
+        var bruto = $("#id_valor_bruto1").val();
+        var neto = $("#id_valor_neto1").val();
+        if (bruto === undefined){bruto=0;} else {if (bruto.length == 0){bruto=0;} else {bruto=bruto.replace(/\./g, '')}}
+        if (neto === undefined){neto=0;} else {if (neto.length == 0){neto=0;} else {neto=neto.replace(/\./g, '')}}
+        if (parseInt(bruto) >= parseInt(neto)) {
+            if (parseInt(bruto) > 0) {
+                descuento = Math.round(100 - parseInt(neto) * 100 / parseInt(bruto))
+            }
+            else {
+                descuento = 0
+            }
+            $("#id_porc_descuento1").val(parseFloat(descuento));
+        }
+        else {
+            swal({
+                title: 'VALOR TARIFA ES MENOR QUE EL VALOR NETO',
+                text: 'Por favor corrija..',
+                type: 'error',
+                confirmButtonClass: "btn btn-info",
+                buttonsStyling: false
+            }).catch(swal.noop)
+            $("#id_porc_descuento1").val(0);
+            descuento = 0;
+        }
+        $("#id_valor_bruto").val(parseInt(bruto));
+        $("#id_porc_descuento").val(parseInt(descuento));
+        $("#id_valor_neto").val(parseInt(neto));
+    }
+    
+
+    function ConfirmaGrabar(){
+        var bruto = $("#id_valor_bruto1").val();
+        var neto = $("#id_valor_neto1").val();
+        if (bruto === undefined){bruto=0;} else {if (bruto.length == 0){bruto=0;} else {bruto=bruto.replace(/\./g, '')}}
+        if (neto === undefined){neto=0;} else {if (neto.length == 0){neto=0;} else {neto=neto.replace(/\./g, '')}}
+        swal({
+            title: 'Confirme.',
+            showCancelButton: false,
+
+            showCancelButton: true,
+            confirmButtonText: 'Generar Radicado ?',
+            cancelButtonText: 'Cancelar',
+            confirmButtonClass: "btn btn-success",
+            cancelButtonClass: "btn btn-danger",
+            buttonsStyling: false
+        }).then(function(dismiss) {
+            if (dismiss.dismiss === 'cancel') {
+                swal({
+                    title: 'Cancelado',
+                    text: 'Radicado no generado..',
+                    type: 'error',
+                    confirmButtonClass: "btn btn-info",
+                    buttonsStyling: false
+                }).catch(swal.noop)
+            }
+            else {
+                $('#id_form_invoice').submit();
+            }
+        }).catch(swal.noop)
+    }
+
+    function format(input){
+        var num = input.value.replace(/\./g,'');
+
+        if(!isNaN(num)){
+            num = num.toString().split('').reverse().join('').replace(/(?=\d*\.?)(\d{3})/g,'$1.');
+            num = num.split('').reverse().join('').replace(/^[\.]/,'');
+            input.value = num;
+        }
+        else{ alert('Solo se permiten numeros');
+            input.value = input.value.replace(/[^\d\.]*/g,'');
+        }
+    }
+
+</script>
+{% endblock contenido %}
+
